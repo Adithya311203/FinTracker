@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | FinTracker</title>
+    <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <a class="logo-part1">FIN</a><a class="logo-part2">TRACKER</a>
+          </div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('add_expenses') }}">Add Expense</a></li>
+            <li><a href="/edit-expense">Edit Expense</a></li>
+            <li><a href="{{ url_for('expense_list') }}">Expense List</a></li>
+            <li><a href="{{ url_for('profile') }}">Profile</a></li>
+            <li><a href="{{ url_for('login') }}">Log Out</a></li>
+          </ul>
+      </nav>
+      <!-- <div class="page" style="color: white;">
+        <b>Name: </b>{{user.name}}
+        <b>Email: </b>{{user.email}}
+        <b>Password: </b>{{user.id}}
+      </div> -->
+      <div class="status-grid">
+  {% for tile in status_tiles %}
+    <div class="tile">
+      <div class="emoji">{{ tile.icon }}</div>
+      <div class="label">{{ tile.label }}</div>
+      <div class="value">{{ tile.value }}</div>
+    </div>
+  {% endfor %}
+</div>
+
+      <div class="worm">
+  {{ worm_chart_div | safe }}
+      </div>
+        <div class="pie-container">
+        {{ pie_chart_div | safe }}
+        <img src="{{ url_for('static', filename='coin.gif') }}" class="center-gif">
+        </div>
+        
+
+        <div class="mini-gauge-card">
+  <div class="gauge-top">
+  <div>
+    {{ gauge_this_month | safe }}
+    <div style="color:white; text-align:center; font-size:18px; margin-top:10px;">
+      Monthly Budget Limit: ₹{{ budget_limit | default(5000) | int | string | replace(",", "") }}
+    </div>
+  </div>
+</div>
+
+<div class="gauge-bottom">
+  <div>{{ gauge_this_year | safe }}</div>
+  <div>{{ gauge_month_vs_last | safe }}</div>
+</div>
+
+</div>
+
+
+
+      <div class="bar">
+      <!-- Embed Plotly Chart -->
+      {{ chart_div | safe }}
+      </div>
+      <div class="stats">
+        <div class="sub_stats">
+            
+            <table class="latest-expenses-table"><h3>Latest Expenses</h3>
+                <tr>
+                    <th>Name</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                </tr>
+                {% for expense in latest_expenses %}
+                <tr>
+                    <td>{{ expense.name }}</td>
+                    <td>{{ expense.amount }}</td>
+                    <td>{{ expense.date.strftime("%Y-%m-%d") }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+      </div>
+</body>
+</html>

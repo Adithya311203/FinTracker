@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Expenses | FinTracker</title>
+    <link rel="stylesheet" href="/static/add_expenses.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/form.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='profile_style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <a class="logo-part1">FIN</a><a class="logo-part2">TRACKER</a>
+          </div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('add_expenses') }}">Add Expense</a></li>
+            <li><a href="/edit-expense">Edit Expense</a></li>
+            <li><a href="{{ url_for('expense_list') }}">Expense List</a></li>
+            <li><a href="{{ url_for('profile') }}">Profile</a></li>
+            <li><a href="{{ url_for('login') }}">Log Out</a></li>
+          </ul>
+      </nav>
+    
+    <div class="add_expenses">
+    <div class="add_expenses_head">Add Expense</div>
+    <div class="forms">
+        <form action="/add_expenses" method="POST">
+                <input type="text" name="name" placeholder="Name of the Expense" required class="input-box"><br>
+                <input type="number" name="amount" placeholder="Amount" required class="input-box"><br>
+                <input type="date" name="date" placeholder="Date of the Expense" required class="input-box" ><br>
+                <textarea class="input-box" name="desc" placeholder="Description" style="align-content: center;height: 150px;"></textarea><br>
+                <button type="submit">Confirm</button><br>
+        </form>
+    </div>
+    </div>
+    
+</body>
+</html>

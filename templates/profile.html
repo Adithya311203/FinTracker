@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | FinTracker</title>
+    <link rel="stylesheet" href="profile_style.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='profile_style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <a class="logo-part1">FIN</a><a class="logo-part2">TRACKER</a>
+          </div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('add_expenses') }}">Add Expense</a></li>
+            <li><a href="/edit-expense">Edit Expense</a></li>
+            <li><a href="{{ url_for('expense_list') }}">Expense List</a></li>
+            <li><a href="{{ url_for('profile') }}">Profile</a></li>
+            <li><a href="{{ url_for('login') }}">Log Out</a></li>
+          </ul>
+      </nav>
+    <div class="profile_head">User Profile</div>
+    <div class="box">
+        <table>
+            <tr><td class="attr_1">Name :</td><td class="value">{{user.name}}</td></tr>
+            <tr><td class="attr_1">Email :</td><td class="value">{{user.email}}</td></tr>
+            <tr><td class="attr_1">ID :</td><td class="value">{{user.id}}</td></tr>
+        </table>
+        
+    </div>
+    
+</body>
+</html>
