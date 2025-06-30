@@ -1,0 +1,120 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #0a1931;
+    /* background-image: linear-gradient(#eceff1, #cfd8dc, #b0bec5, #90a4ae, #78909c, #607d8b, #546e7a, #455a64, #37474f, #263238); */
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  }
+  
+  /* Navbar */
+  .navbar {
+    display: flex;
+    align-items: center;
+    background-color: black;
+    padding: 2.5px 20px;
+    height: 60px;
+    position: sticky;
+  }
+  
+  /* Logo */
+  .logo {
+    display: flex;
+    align-items: center;
+    
+  }
+  
+  .logo-part1 {
+    font-size: 45px;
+    color: lime;
+    font-weight: 800;
+    text-decoration: underline;
+    text-shadow: 0 0 12px;
+  }
+  
+  .logo-part2 {
+    font-size: 45px;
+    font-weight: 800;
+    color: white;
+    text-decoration: none;
+  }
+  
+  /* Nav links */
+  .nav-links {
+    list-style: none;
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-end;
+    margin-left: auto;
+    padding: 0;
+    gap: 10px;
+    height: 100%;
+  }
+  
+  .nav-links li {
+    height: 100%;
+  }
+  
+  /* Each nav button */
+  .nav-links li a {
+    position: relative;
+    text-decoration: none;
+    color: white;
+    font-size: 20px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 120px;
+    border-radius: 0;
+    overflow: hidden;
+    transition: color 0.3s ease;
+    box-shadow:
+      -3px 0 0 rgba(128, 128, 128, 0.4),
+       3px 0 0 rgba(128, 128, 128, 0.4);
+    z-index: 1;
+  }
+  
+  /* Hover background image effect (fills the button) */
+  .nav-links li a::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('money-svgrepo-com.svg');
+    background-repeat: no-repeat;
+    background-size: cover; /* Fills the full button */
+    background-position: center;
+    opacity: 0;
+    z-index: -1;
+    transition: top 0.5s ease, opacity 0.5s ease;
+  }
+  
+  .nav-links li a:hover::before {
+    top: 0;
+    opacity: 1; /* Adjust for subtlety */
+  }
+  
+  .nav-links li a:hover {
+    color: black;
+    font-size: 20px;
+    font-weight:900;
+    box-shadow: 0 0 15px lime;
+    text-shadow: 0 0 25px black;
+  }
+  
+/* td{
+      background: white;
+      color: black;
+      border: 5px solid white;
+      width: 300px;
+      height: 300px;
+      background-image: linear-gradient(270deg,#b3cfe5,#4a7fa7);
+  } */
+
+  .test{
+    background-image: linear-gradient(90deg,#1a3d63,#f6fafd);
+    color: white;
+  }
