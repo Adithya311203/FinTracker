@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Expenses | FinTracker</title>
+    <link rel="stylesheet" href="/static/expense_list.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='expense_list.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <a class="logo-part1">FIN</a><a class="logo-part2">TRACKER</a>
+          </div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('add_expenses') }}">Add Expense</a></li>
+            <li><a href="/edit-expense">Edit Expense</a></li>
+            <li><a href="{{ url_for('expense_list') }}">Expense List</a></li>
+            <li><a href="{{ url_for('profile') }}">Profile</a></li>
+            <li><a href="{{ url_for('login') }}">Log Out</a></li>
+          </ul>
+      </nav>
+    <div class="expense_list">
+    <h2>All Expenses for the user {{ user.name }}</h2>
+    <table>
+        <!-- <tr style="background-image: linear-gradient(135deg,grey,silver,white,ivory);color: blue;text-shadow: 0 0 4px white;"> -->
+            <tr class="header">
+            <th style="width: 210px;">Name</th>
+            <th style="width: 150px;">Amount
+                {% if sort_by == 'amount' and order == 'asc' %}
+                    <a href="{{ url_for('expense_list', sort='amount', order='desc') }}">&#x25B2;</a>  <!-- Up arrow for ascending -->
+                {% else %}
+                    <a href="{{ url_for('expense_list', sort='amount', order='asc') }}">&#x25BC;</a>  <!-- Down arrow for descending -->
+                {% endif %}
+            </th>
+            <th style="width: 190px;">Date
+                {% if sort_by == 'date' and order == 'asc' %}
+                    <a href="{{ url_for('expense_list', sort='date', order='desc') }}">&#x25B2;</a>
+                {% else %}
+                    <a href="{{ url_for('expense_list', sort='date', order='asc') }}">&#x25BC;</a>
+                {% endif %}
+            </th>
+            <th style="width: 300px;">Description</th>
+        </tr>
+        {% for expense in expenses %}
+        <tr>
+            <td>{{ expense.name }}</td>
+            <td>{{ expense.amount }}</td>
+            <td>{{ expense.date.strftime("%Y-%m-%d") }}</td>
+            <td>{{ expense.description }}</td>
+        </tr>
+        {% endfor %}
+    </table><br><b>Total: {{total}}</b>
+    <a class="sort-links" href="{{ url_for('expense_list', sort=None) }}" style="padding-left: 90% ;">[unsort]</a>
+    </div>
+</body>
+</html>

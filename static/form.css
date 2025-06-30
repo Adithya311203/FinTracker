@@ -1,0 +1,99 @@
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+  }
+
+
+
+.form-logo{
+    padding-top: 25px;
+    text-align: center;
+}
+ .form-logo-part1 {
+    font-size: 85px;
+    color: lime;
+    font-weight: 800;
+    text-decoration: none;
+    text-shadow: 0 0 12px;
+    text-decoration: solid underline;
+  }
+  
+  .form-logo-part2 {
+    font-size: 85px;
+    font-weight: 800;
+    color: white;
+    text-decoration: none;
+  }
+
+  .register {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .register-form {
+    width: 450px;
+    height: max-content;
+    background-image: radial-gradient(circle at bottom left, yellow,yellowgreen,lime,green);
+    text-align: center;
+    border-radius: 10%;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: center;
+    box-shadow: 0 0 10px lime;
+    padding: 20px 0px;
+  }
+
+  .input-box {
+    width: 300px;
+    height: 50px;
+    margin: 5px;
+    border-radius: 20px 0px 20px 0px;
+    /* border: solid 3px lime; */
+    background-color: #e3c39d;
+    text-align: center;
+    font-size: 18px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* border: none; */
+    outline: none; 
+    color:white;
+    font-weight: bold;
+  }
+  
+.input-box::placeholder{
+    color: red;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    
+}
+
+
+  button{
+    width: 100px;
+    height: 40px;
+    margin: 7px;
+    border-radius: 50px;
+    /* background-image: linear-gradient(90deg,red,red,red,orangered,orange); */
+    background-color: #a4b5c4;
+    color: white;
+    border: solid 3px white;
+    font-size: 20px;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    cursor: pointer;
+    text-shadow: 0 0 5px white;
+    font-weight: bold;
+  }
+
+  button:hover{
+    box-shadow: 0 0 10px #a4b5c4;
+    color: #a4b5c4;
+    border-color: #a4b5c4;
+    /* background-image: linear-gradient(90deg,black,grey); */
+    background-color: black;
+    /* transition-duration: 0.7s; */
+    transition:ease 0.7s;
+    text-shadow: 0 0 1px #a4b5c4;
+  }

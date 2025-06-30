@@ -1,0 +1,92 @@
+.box {
+    border: 2px solid blue;
+    margin: 30px auto;
+    border-radius: 40px;
+    height: 200px;
+    width: max-content;
+    padding: 15px;
+    font-size: larger;
+    border-right: 7px solid blue;
+    border-bottom: 10px solid blue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: x-large;
+    color: blue;
+    font-weight: 800;
+    text-shadow: 0 0 25px;
+    box-shadow: 0 0 15px;
+}
+
+.box:hover {
+    box-shadow: 0 0 20px white;
+    border: 2px solid white;
+    border-right: 7px solid white;
+    border-bottom: 10px solid white;
+    background-color: rgb(40, 40, 40);
+    text-shadow: none;
+    transform-origin: center;
+    transform: perspective(800px) rotateY(30deg);
+    transition: transform 1.5s;
+    transform-style: preserve-3d;
+    color: white;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td {
+    padding: 15px 30px;
+    vertical-align: top;
+    font-size: large;
+    font-size: 25px;
+}
+
+td.attr_1 {
+    text-align: right;  /* 👈 Align labels to the right side of the left cell */
+    color: lime;
+    font-weight: bold;
+}
+
+td.value {
+    text-align: left;   /* 👈 Keep values left-aligned in the right cell */
+    color: white;
+}
+
+.profile_attr:hover {
+    color: yellow;
+    text-shadow: 0 0 10px black;
+    font-size: 1000px;
+}
+
+tr {
+    text-align: left;
+    direction: ltr;
+}
+
+.profile_head {
+    color: red;
+    font-weight: 900;
+    font-size: xx-large;
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 70px;
+    text-shadow: 0 0 20px red;
+    justify-content: center;
+}
+
+.attr_1 {
+    /* No need for this class on <a>, it's moved to <td> */
+    justify-content: right;
+    text-align: right;
+    align-items: right;
+    align-content: right;
+}
+
+tr:hover{
+    text-shadow: 0 0 25px;
+    text-size-adjust: 100px;
+}

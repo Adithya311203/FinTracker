@@ -1,0 +1,242 @@
+.bar{
+    position: absolute;
+    top: 80px; /* adjust depending on navbar height */
+    right: 30px; /* adjust distance from right edge */
+    width: 500px; /* set width as needed */
+    height: 400px; /* set height as needed */
+    background-image: linear-gradient(90deg,cyan,lime); /* optional for contrast */
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.stats{
+position: absolute;
+    bottom: 20px; /* adjust depending on navbar height */
+    right: 30px; /* adjust distance from right edge */
+    width: 500px; /* set width as needed */
+    height: 175px; /* set height as needed */
+    background-image: linear-gradient(90deg,cyan,lime); /* optional for contrast */
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+  
+}
+
+.sub_stats{
+    background-color: #1a3d63;
+    border-radius: 10px;
+    padding: 10px 20px;
+    height: 155px;
+}
+
+.latest-expenses-table th{
+    color: red;
+    border: 1px solid white;
+}
+
+.latest-expenses-table td{
+    color: white;
+    border-left: 1px solid white;
+    border-right: 1px solid white;
+}
+
+.latest-expenses-table{
+    width: 100%;
+    align-items: center;
+    text-align: center;
+    /* padding-left: 20px; */
+    border: 1px solid white;
+}
+
+.latest-expenses-table table{
+    border: 4px solid white;
+}
+tr:nth-child(even) {
+    background-color: #225082; /* Light gray */
+  }
+
+h3{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+    margin: 3px;
+   
+}
+
+.worm {
+    position: absolute;
+    top: 80px;
+    right: 560px;
+    width: 600px;
+    max-height: 222px;
+    min-height: 222px;
+    background-color: #1a3d63;
+    border-radius: 10px;
+    padding: 10px 10px;  /* reduced vertical padding */
+    overflow: hidden;
+    box-sizing: border-box;
+    height: auto; 
+    background-image: linear-gradient(270deg,cyan,rgb(0, 115, 255));
+}
+.pie-container {
+    position: absolute;
+    width: 500px;
+    height: 375px;
+    bottom: 20px; /* adjust depending on navbar height */
+    right: 560px; /* adjust distance from right edge */
+    border-radius: 10px ;
+    padding: 10px 10px;
+    background-image: linear-gradient(270deg,cyan,#0494fc);
+    overflow: hidden;
+}
+
+.pie-container > div {
+    width: 100%;
+    height: 100%;
+}
+
+.center-gif {
+    position: absolute;
+    top: 52.7%;
+    left: 47%;
+    width: 142px; /* adjust size */
+    height: 80px;
+    transform: translate(-50%, -50%);
+    pointer-events: none; /* allows user interaction with chart behind */
+    z-index: 10;
+}
+/* 
+.mini-gauge-card {
+    position: absolute;
+    bottom: 20px;          
+    left: 30px;
+    width: 410px;
+    height: 395px;  
+    border-radius: 10px;
+
+    overflow: hidden;
+    box-sizing: border-box;
+    border-radius: 10px ;
+    padding: 10px 10px;
+    background-image: linear-gradient(270deg,cyan,#0494fc);
+   
+} */
+.mini-gauge-card {
+    position: absolute;
+    bottom: 20px;
+    left: 30px;
+    width: 415px;
+    height: 395px;
+    border-radius: 10px;
+    box-sizing: border-box;
+    padding: 10px 10px;
+    background-image: linear-gradient(90deg, yellowgreen, #0494fc);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 8px; /* space between top and bottom sections */
+}
+
+/* Top big gauge ("This Month") */
+.gauge-top {
+    width: 100%;
+    height: 60%;
+    background-color: #1a3d63;
+    border-radius: 6px;
+    padding: 4px;
+    padding-top: 10px;
+    box-sizing: border-box;
+}
+
+/* Bottom 2 small gauges row */
+.gauge-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 38%;
+    gap: 6px;
+}
+
+.gauge-bottom > div {
+    flex: 1;
+    height: 100%;
+    background-color: #1a3d63;
+    border-radius: 6px;
+    padding: 4px;
+    box-sizing: border-box;
+}
+
+.status-tiles {
+    position: absolute;
+    display:flex;
+    flex-wrap: wrap;
+    background-color: #225082;
+    height: 200px;
+    top: 80px;
+    left: 30px;
+    border-radius: 10px;
+    padding: 10px 10px;
+    /* overflow: hidden; */
+    width: 300px;
+    align-items: center;
+    justify-content: center;
+}
+
+.status-tile {
+    background-color: #1a3d63;
+    height: 76px;
+    color: white;
+    /* padding: 12px; */
+    /* border-radius: 10px; */
+    width: 75px;
+    text-align: center;
+    /* box-shadow: 0 0 8px rgba(0, 255, 255, 0.2); */
+    border: 2px solid white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.tile .emoji {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.tile .label {
+    font-size: 12px;
+    color: #ccc;
+}
+
+.tile .value {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.status-grid {
+  display: grid;
+  top: 80px;
+  left: 30px;
+  border-radius: 10px;
+  padding: 10px 10px;
+  grid-template-columns: repeat(3, 1fr);  /* 3 columns */
+  grid-template-rows: repeat(2, 1fr);     /* 2 rows */
+  gap: 0;                                 /* No space between tiles */
+  width: 315px;                            /* or set specific width */
+  height: 200px;
+  background-image: linear-gradient(90deg,yellowgreen,rgb(0, 115, 255));
+  position:absolute;
+  align-items: center;
+}
+
+.tile {
+  background-color: #1a3d63;
+  color: white;
+  padding: 8px;
+  /* display: flex; */
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  text-align: center;
+  /* border: 1px solid grey; */
+  height: 80px;
+}
