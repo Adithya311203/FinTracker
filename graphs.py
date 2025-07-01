@@ -26,9 +26,6 @@ def generate_bar_chart(expenses):
     return plot(fig,output_type='div', include_plotlyjs = False)
 
 def generate_pie_chart(expenses):
-    from plotly.offline import plot
-    from collections import defaultdict
-    import plotly.graph_objects as go
 
     data = defaultdict(int)
     for e in expenses:
@@ -97,7 +94,7 @@ def generate_worm_chart(expenses):
     ),
     autosize=True,
     height=200,
-    margin=dict(l=50, r=40, t=30, b=50),
+    margin=dict(l=50, r=40, t=50, b=50),
 
     xaxis=dict(
         title=dict(
@@ -174,11 +171,11 @@ def create_gauge(title, value, budget_limit=50000, width=150, height=150, ref=No
         domain={'x': [0, 1], 'y': [0, 1]},
         gauge={
             'axis': {'range': [0, 50000], 'tickwidth': 1, 'tickcolor': "white"},
-            'bar': {'color': bar_color, 'thickness': 0.35},
+            'bar': {'color': bar_color, 'thickness': 0.55},
             'bgcolor': "white",  # makes the unfilled part white bordered
             'steps': [],  # no gradient fill in background
             'threshold': {
-                'line': {'color': "white", 'width': 2},
+                'line': {'color': "blue", 'width': 3},
                 'thickness': 0.75,
                 'value': budget_limit
             } if show_budget else None
@@ -223,12 +220,12 @@ def generate_gauge_charts(expenses, monthly_budget_limit=5000):
 
     # ✅ 2. Small gauge for "This Year" (no budget)
     gauge_this_year = create_gauge("This Year", curr_year, curr_year,
-                                   width=180, height=140, show_budget=False)
+                                   width=180, height=135, show_budget=False)
 
     # ✅ 3. Small gauge for "Month vs Last"
     gauge_month_vs_last = create_gauge("Month vs Last", curr_month,
                                        max(curr_month, last_month, 10000),
-                                       width=180, height=140,
+                                       width=180, height=135,
                                        ref=last_month,
                                         show_budget=False)
 
