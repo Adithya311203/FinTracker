@@ -1,7 +1,7 @@
-import plotly.graph_objects as go
-from plotly.offline import plot
+import plotly.graph_objects as go # type: ignore
+from plotly.offline import plot # type: ignore
 from collections import defaultdict
-import pandas as pd
+import pandas as pd # type: ignore
 from datetime import date,datetime
 
 def generate_bar_chart(expenses):
