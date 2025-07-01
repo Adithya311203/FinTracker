@@ -110,6 +110,7 @@ def profile():
         details = UserDetails(user_id=user.id, email=user.email)
         db.session.add(details)
         db.session.commit()
+        session['ai_dirty'] = True
 
     if request.method == 'POST':
         field = request.form.get('save_field')
@@ -124,6 +125,7 @@ def profile():
             setattr(details, field, value)
 
         db.session.commit()
+        session['ai_dirty'] = True
         flash(f"{field.replace('_', ' ').title()} updated!", "success")
         return redirect('/profile')
 
@@ -144,6 +146,7 @@ def add_expenses():
             newExpense = Expenses(name=name,amount=amount,date=date_obj,description=desc)
             db.session.add(newExpense)
             db.session.commit()
+            session['ai_dirty'] = True
             print('Expense has been added')
             return redirect('/add_expenses')
         user = User.query.filter_by(email=session['email']).first()
@@ -271,6 +274,73 @@ def download_txt():
     response.headers['Content-Disposition'] = 'attachment; filename=fintracker_report'+datetime.now().strftime('%Y%m%d%H%M%S')+'.txt'
     return response
 
+
+import os
+import json
+import threading
+from ai import analyze_txt_content, generate_data_hash
+
+
+import markdown
+from ai import analyze_txt_content, generate_data_hash
+
+CACHE_FILE = "ai_cache.json"
+
+@app.route('/ai')
+def ai():
+    if 'email' not in session:
+        return redirect('/login')
+
+    user = User.query.filter_by(email=session['email']).first()
+    details = UserDetails.query.filter_by(user_id=user.id).first()
+    expenses = Expenses.query.all()
+
+    profile_data = {field: getattr(details, field) or "Not set" for field in
+                    ['annual_income', 'monthly_budget', 'occupation', 'age', 'location', 'financial_goal']}
+    expense_data = [{"name": e.name, "amount": e.amount, "date": str(e.date), "desc": e.description} for e in expenses[:10]]
+
+    current_hash = generate_data_hash(profile_data, expense_data)
+    cache = {}
+    last_refreshed = None
+
+    if os.path.exists(CACHE_FILE):
+        with open(CACHE_FILE, 'r') as f:
+            cache = json.load(f)
+
+        # ✅ Get file modification time for "Last Refreshed"
+        last_refreshed = datetime.fromtimestamp(os.path.getmtime(CACHE_FILE)).strftime("%Y-%m-%d %H:%M:%S")
+
+        if cache.get('hash') == current_hash:
+            rendered_output = markdown.markdown(
+                cache.get('response', 'Generating new analysis...'),
+                extensions=['fenced_code', 'tables']
+            )
+            return render_template('ai.html', user=user, analysis=rendered_output, last_refreshed=last_refreshed)
+
+    cached_response = cache.get('response', "Generating new analysis...")
+    if "Would you like" in cached_response:
+        cached_response = cached_response.rsplit("Would you like", 1)[0].strip()
+
+    # ✅ AI will generate in the background
+    def background_ai_processing():
+        profile_summary = f"Income: ₹{details.annual_income}, Budget: ₹{details.monthly_budget}, Goal: {details.financial_goal or 'N/A'}"
+        expense_summary = f"Recent Expenses Total: ₹{sum(e['amount'] for e in expense_data)}"
+        text = profile_summary + "\n" + expense_summary
+
+        categories = list(set(e['desc'] for e in expense_data))
+        if categories:
+            text += f"\nExpense Categories: {', '.join(categories)}"
+
+        result = analyze_txt_content(text)
+
+        with open(CACHE_FILE, 'w') as f:
+            json.dump({'hash': current_hash, 'response': result}, f)
+
+    threading.Thread(target=background_ai_processing).start()
+    rendered_output = markdown.markdown(cached_response, extensions=['fenced_code', 'tables'])
+
+    # ✅ even here, we pass last_refreshed if available
+    return render_template('ai.html', user=user, analysis=rendered_output, last_refreshed=last_refreshed)
 
 
 if __name__ == '__main__':

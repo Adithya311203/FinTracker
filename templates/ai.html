@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Financial Insight | FinTracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='ai.css') }}">
+    <style>
+.ai-content {
+    background-color: #fdfdfd;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 25px;
+    margin-top: 20px;
+    line-height: 1.7;
+    color: #333;
+    box-shadow: 0 0 12px rgba(0,0,0,0.05);
+    font-family: 'Segoe UI', sans-serif;
+}
+.ai-content h3, .ai-content h4 {
+    color: #222;
+    margin-top: 20px;
+}
+.ai-content ul {
+    margin-left: 1.5rem;
+    padding-left: 0.5rem;
+}
+.ai-content li {
+    margin-bottom: 6px;
+}
+</style>
+
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <a class="logo-part1">FIN</a><a class="logo-part2">TRACKER</a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('add_expenses') }}">Add Expense</a></li>
+            <li><a href="{{ url_for('ai') }}">AI Insights</a></li>
+            <li><a href="{{ url_for('expense_list') }}">Expense List</a></li>
+            <li><a href="{{ url_for('profile') }}">Profile</a></li>
+            <li><a href="{{ url_for('login') }}">Log Out</a></li>
+        </ul>
+    </nav>
+
+    {% extends 'base.html' %}
+
+{% block content %}
+
+<div class="ai-container">
+    <div class="ai-header">
+        <h2>💡 AI Financial Insights</h2>
+        <span class="refreshed-time">Last refreshed: {{ last_refreshed }}</span>
+    </div>
+    <div class="ai-output markdown-body">
+        {{ analysis | safe }}
+    </div>
+</div>
+{% endblock %}
+
+
+</body>
+</html>
