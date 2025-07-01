@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, session,flash
+from flask import Flask, render_template, redirect, url_for, request, session,flash,make_response
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Date
 import bcrypt
@@ -36,6 +36,19 @@ class Expenses(db.Model):
         self.amount = amount
         self.date = date
         self.description = description
+
+class UserDetails(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, unique=True)
+    email = db.Column(db.String(100), nullable=False)
+    annual_income = db.Column(db.Float, nullable=True)
+    monthly_budget = db.Column(db.Float, nullable=True)
+    occupation = db.Column(db.String(100), nullable=True)
+    age = db.Column(db.Integer, nullable=True)
+    location = db.Column(db.String(100), nullable=True)
+    financial_goal = db.Column(db.String(200), nullable=True)
+
+    user = db.relationship('User', backref=db.backref('details', uselist=False))
 
 with app.app_context():
     db.create_all()
@@ -85,12 +98,37 @@ def register():
 
 #     return redirect('/login')
 
-@app.route('/profile', methods = ['GET','PUT'])
+@app.route('/profile', methods=['GET', 'POST'])
 def profile():
-    print("HEY")
-    if session['name']:
-        user = User.query.filter_by(email=session['email']).first()
-        return render_template('profile.html',user=user)
+    if not session.get('email'):
+        return redirect('/login')
+
+    user = User.query.filter_by(email=session['email']).first()
+    details = UserDetails.query.filter_by(user_id=user.id).first()
+
+    if not details:
+        details = UserDetails(user_id=user.id, email=user.email)
+        db.session.add(details)
+        db.session.commit()
+
+    if request.method == 'POST':
+        field = request.form.get('save_field')
+        value = request.form.get(field)
+
+        # Cast types safely
+        if field in ['annual_income', 'monthly_budget']:
+            setattr(details, field, float(value) if value else None)
+        elif field == 'age':
+            setattr(details, field, int(value) if value else None)
+        else:
+            setattr(details, field, value)
+
+        db.session.commit()
+        flash(f"{field.replace('_', ' ').title()} updated!", "success")
+        return redirect('/profile')
+
+    return render_template('profile.html', user=user, details=details)
+
 
 @app.route('/add_expenses', methods=['POST','GET'])
 def add_expenses():
@@ -143,29 +181,95 @@ def expense_list():
 
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
-    if session.get('name'):
-        user = User.query.filter_by(email=session['email']).first()
-        expenses = Expenses.query.all()
+    if 'email' not in session:
+        return redirect('/login')
 
-        chart_div = generate_bar_chart(expenses)
-        worm_chart_div = generate_worm_chart(expenses)
-        pie_chart_div = generate_pie_chart(expenses)
-        latest_expenses = Expenses.query.order_by(Expenses.date.desc()).limit(4).all()
-        gauge_this_month, gauge_this_year, gauge_month_vs_last = generate_gauge_charts(expenses)
-        status_tiles = get_icon_status_data(expenses)
+    user = User.query.filter_by(email=session['email']).first()
+    details = UserDetails.query.filter_by(user_id=user.id).first()
 
-        return render_template(
+    monthly_budget = details.monthly_budget if details and details.monthly_budget else 0
+
+    expenses = Expenses.query.all()
+
+    chart_div = generate_bar_chart(expenses)
+    worm_chart_div = generate_worm_chart(expenses)
+    pie_chart_div = generate_pie_chart(expenses)
+
+    gauge_this_month, gauge_this_year, gauge_month_vs_last = generate_gauge_charts(
+        expenses, monthly_budget_limit=monthly_budget
+    )
+
+    status_tiles = get_icon_status_data(expenses, monthly_budget=monthly_budget)
+    latest_expenses = Expenses.query.order_by(Expenses.date.desc()).limit(4).all()
+
+    return render_template(
         'dashboard.html',
         user=user,
         chart_div=chart_div,
         worm_chart_div=worm_chart_div,
         pie_chart_div=pie_chart_div,
         latest_expenses=latest_expenses,
-        gauge_this_month=gauge_this_month, 
-        gauge_this_year=gauge_this_year, 
+        gauge_this_month=gauge_this_month,
+        gauge_this_year=gauge_this_year,
         gauge_month_vs_last=gauge_month_vs_last,
-        status_tiles=status_tiles
+        status_tiles=status_tiles,
+        monthly_budget=monthly_budget
     )
+
+@app.route('/download_txt', methods=['POST'])
+def download_txt():
+    if 'email' not in session:
+        return redirect('/login')
+
+    user = User.query.filter_by(email=session['email']).first()
+    details = UserDetails.query.filter_by(user_id=user.id).first()
+    expenses = Expenses.query.all()
+
+    total_spent = sum(e.amount for e in expenses)
+    latest_expenses = sorted(expenses, key=lambda x: x.date, reverse=True)[:5]
+
+    txt = f"--- FinTracker Report ---\n\n"
+    txt += f"Name: {user.name}\nEmail: {user.email}\n\n"
+
+    if details:
+        txt += f"Age: {details.age or 'N/A'}\n"
+        txt += f"Location: {details.location or 'N/A'}\n"
+        txt += f"Occupation: {details.occupation or 'N/A'}\n"
+        txt += f"Annual Income: ₹{details.annual_income or 'N/A'}\n"
+        txt += f"Monthly Budget: ₹{details.monthly_budget or 'N/A'}\n"
+        txt += f"Financial Goal: {details.financial_goal or 'N/A'}\n"
+
+    # Budget comparison
+    current_month = datetime.now().month
+    current_year = datetime.now().year
+    this_month_expenses = [e.amount for e in expenses if e.date.month == current_month and e.date.year == current_year]
+    spent_this_month = sum(this_month_expenses)
+
+    txt += f"\n--- Budget Comparison ---\n"
+    txt += f"Spent This Month: ₹{spent_this_month}\n"
+    if details and details.monthly_budget:
+        budget = details.monthly_budget
+        txt += f"Budget Remaining: ₹{budget - spent_this_month}\n"
+        txt += "Status: "
+        if spent_this_month > budget:
+            txt += "❌ Over Budget\n"
+        else:
+            txt += "✅ Within Budget\n"
+    else:
+        txt += "Monthly budget not set.\n"
+
+    txt += f"\n--- Expense Summary ---\n"
+    txt += f"Total Expenses: ₹{total_spent}\n"
+    txt += f"Total Entries: {len(expenses)}\n\n"
+
+    txt += f"--- Latest 5 Expenses ---\n"
+    for e in latest_expenses:
+        txt += f"{e.date.strftime('%Y-%m-%d')}: ₹{e.amount} for {e.name} ({e.description})\n"
+
+    response = make_response(txt)
+    response.headers['Content-Type'] = 'text/plain'
+    response.headers['Content-Disposition'] = 'attachment; filename=fintracker_report'+datetime.now().strftime('%Y%m%d%H%M%S')+'.txt'
+    return response
 
 
 

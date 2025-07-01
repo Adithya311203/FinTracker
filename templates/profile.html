@@ -4,16 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile | FinTracker</title>
-    <link rel="stylesheet" href="profile_style.css">
-    <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='profile_style.css') }}">
 </head>
 <body>
+
     <nav class="navbar">
         <div class="logo">
             <a class="logo-part1">FIN</a><a class="logo-part2">TRACKER</a>
-          </div>
+        </div>
         <ul class="nav-links">
             <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
             <li><a href="{{ url_for('add_expenses') }}">Add Expense</a></li>
@@ -21,17 +20,61 @@
             <li><a href="{{ url_for('expense_list') }}">Expense List</a></li>
             <li><a href="{{ url_for('profile') }}">Profile</a></li>
             <li><a href="{{ url_for('login') }}">Log Out</a></li>
-          </ul>
-      </nav>
-    <div class="profile_head">User Profile</div>
-    <div class="box">
-        <table>
-            <tr><td class="attr_1">Name :</td><td class="value">{{user.name}}</td></tr>
-            <tr><td class="attr_1">Email :</td><td class="value">{{user.email}}</td></tr>
-            <tr><td class="attr_1">ID :</td><td class="value">{{user.id}}</td></tr>
-        </table>
-        
+        </ul>
+    </nav>
+
+    <div class="profile-container">
+        <h2>Edit Profile</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages">
+                {% for category, message in messages %}
+                    <li class="flash-{{ category }}">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" id="profileForm">
+            {% for field in ['annual_income', 'monthly_budget', 'occupation', 'age', 'location', 'financial_goal'] %}
+                <div class="profile-field" id="{{ field }}_field">
+                    <label class="profile-label">{{ field.replace('_', ' ').title() }}     :</label>
+
+                    <!-- Display mode -->
+                    <span class="edit-display" id="{{ field }}_display">
+                        {{ details | attr(field) or 'Not set' }}
+                    </span>
+
+                    <!-- Input mode -->
+                    {% if field == 'financial_goal' %}
+                        <textarea class="edit-input" name="{{ field }}" id="{{ field }}_input">{{ details | attr(field) or '' }}</textarea>
+                    {% else %}
+                        <input type="text" class="edit-input" name="{{ field }}" id="{{ field }}_input" value="{{ details | attr(field) or '' }}">
+                    {% endif %}
+
+                    <!-- Buttons -->
+                    <span class="edit-buttons">
+                        <button type="button" onclick="editField('{{ field }}')">✎</button>
+                        <button type="submit" name="save_field" value="{{ field }}" class="edit-input">Save</button>
+                    </span>
+                </div>
+            {% endfor %}
+        </form>
+        <form action="{{ url_for('download_txt') }}" method="post" style="margin-top: 20px;">
+    <button type="submit" class="download-btn">📄 Download Report</button>
+</form>
     </div>
     
+
+    <script>
+        function editField(fieldName) {
+            document.getElementById(`${fieldName}_display`).style.display = 'none';
+            document.getElementById(`${fieldName}_input`).style.display = 'inline-block';
+            const buttons = document.querySelectorAll(`#${fieldName}_field .edit-input`);
+            buttons.forEach(el => el.style.display = 'inline-block');
+        }
+    </script>
+
 </body>
 </html>

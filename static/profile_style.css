@@ -1,92 +1,119 @@
-.box {
-    border: 2px solid blue;
-    margin: 30px auto;
-    border-radius: 40px;
-    height: 200px;
-    width: max-content;
-    padding: 15px;
-    font-size: larger;
-    border-right: 7px solid blue;
-    border-bottom: 10px solid blue;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: x-large;
-    color: blue;
-    font-weight: 800;
-    text-shadow: 0 0 25px;
-    box-shadow: 0 0 15px;
+.profile-container {
+    background-color: #1c1c1c;
+    max-width: 700px;
+    margin: 50px auto;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px #0ff;
 }
 
-.box:hover {
-    box-shadow: 0 0 20px white;
-    border: 2px solid white;
-    border-right: 7px solid white;
-    border-bottom: 10px solid white;
-    background-color: rgb(40, 40, 40);
-    text-shadow: none;
-    transform-origin: center;
-    transform: perspective(800px) rotateY(30deg);
-    transition: transform 1.5s;
-    transform-style: preserve-3d;
-    color: white;
-}
-
-table {
-    border-collapse: collapse;
-    width: 100%;
-}
-
-td {
-    padding: 15px 30px;
-    vertical-align: top;
-    font-size: large;
-    font-size: 25px;
-}
-
-td.attr_1 {
-    text-align: right;  /* 👈 Align labels to the right side of the left cell */
-    color: lime;
-    font-weight: bold;
-}
-
-td.value {
-    text-align: left;   /* 👈 Keep values left-aligned in the right cell */
-    color: white;
-}
-
-.profile_attr:hover {
-    color: yellow;
-    text-shadow: 0 0 10px black;
-    font-size: 1000px;
-}
-
-tr {
-    text-align: left;
-    direction: ltr;
-}
-
-.profile_head {
-    color: red;
-    font-weight: 900;
-    font-size: xx-large;
+.profile-container h2 {
     text-align: center;
-    margin-top: 50px;
-    margin-bottom: 70px;
-    text-shadow: 0 0 20px red;
-    justify-content: center;
+    color: #0ff;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px #0ff;
+    
 }
 
-.attr_1 {
-    /* No need for this class on <a>, it's moved to <td> */
-    justify-content: right;
+.profile-field {
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.profile-label {
+    font-weight: bold;
+    width: 180px;
+    color: #0ff;
     text-align: right;
-    align-items: right;
-    align-content: right;
+    padding-right: 20px;
 }
 
-tr:hover{
-    text-shadow: 0 0 25px;
-    text-size-adjust: 100px;
+.edit-display {
+    flex: 1;
+    padding: 6px 12px 6px 25px;
+    background-color: #2a2a2a;
+    border-radius: 6px;
+    box-shadow: inset 0 0 5px #000;
+    color: #eee;
+    font-size: 18px;
+    height: 33px;
+    /* text-align: center; */
+    align-content: center;
+}
+
+.edit-input {
+    display: none;
+    flex: 1;
+    padding: 8px 12px;
+    background-color: #222;
+    color: #0ff;
+    border: 1px solid #0ff;
+    border-radius: 6px;
+    font-size: 18px;
+    outline: none;
+}
+
+textarea.edit-input {
+    height: 80px;
+    resize: none;
+}
+
+.edit-buttons {
+    margin-left: 10px;
+    display: flex;
+    gap: 5px;
+}
+
+.edit-buttons button {
+    padding: 6px 12px;
+    font-size: 18px;
+    color: #0ff;
+    background-color: transparent;
+    border: 1px solid #0ff;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.edit-buttons button:hover {
+    background-color: #0ff;
+    color: #121212;
+    box-shadow: 0 0 10px #0ff;
+}
+
+.flash-messages {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.flash-success {
+    color: #00ff88;
+    text-shadow: 0 0 5px #00ff88;
+}
+
+.flash-error {
+    color: #ff4f4f;
+    text-shadow: 0 0 5px #ff4f4f;
+}
+
+.download-btn {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: auto; 
+    margin-right: auto; 
+    display: block;  
+    
+}
+
+.download-btn:hover {
+    background-color: #0056b3;
 }

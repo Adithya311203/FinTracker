@@ -22,11 +22,6 @@
             <li><a href="{{ url_for('login') }}">Log Out</a></li>
           </ul>
       </nav>
-      <!-- <div class="page" style="color: white;">
-        <b>Name: </b>{{user.name}}
-        <b>Email: </b>{{user.email}}
-        <b>Password: </b>{{user.id}}
-      </div> -->
       <div class="status-grid">
   {% for tile in status_tiles %}
     <div class="tile">
@@ -51,7 +46,7 @@
   <div>
     {{ gauge_this_month | safe }}
     <div style="color:white; text-align:center; font-size:18px; margin-top:10px;">
-      Monthly Budget Limit: ₹{{ budget_limit | default(5000) | int | string | replace(",", "") }}
+      Monthly Budget Limit: ₹{{ monthly_budget | default(5000) | int | string | replace(",", "") }}
     </div>
   </div>
 </div>
