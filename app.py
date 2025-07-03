@@ -339,9 +339,12 @@ def ai():
     threading.Thread(target=background_ai_processing).start()
     rendered_output = markdown.markdown(cached_response, extensions=['fenced_code', 'tables'])
 
-    # ✅ even here, we pass last_refreshed if available
+    #  even here, we pass last_refreshed if available
     return render_template('ai.html', user=user, analysis=rendered_output, last_refreshed=last_refreshed)
 
 
-if __name__ == '__main__':
+def main():
     app.run(host='0.0.0.0', port=5000, debug=True)
+
+if __name__ == '__main__':
+    main()
