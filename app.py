@@ -82,21 +82,20 @@ def register():
         name = request.form['name']
         email = request.form['email']
         password = request.form['password']
+
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            flash('Email already registered!', 'error')
+            return render_template('register.html', error='Email already registered')
+
         newUser = User(name=name,email=email,password=password)
         db.session.add(newUser)
         db.session.commit()
         print('User has been registered')
         return redirect('/login')
-    print("Cannot Register User")
     return render_template('register.html')
 
-# @app.route('/dashboard', methods=['POST','GET'])
-# def dashboard():
-#     if session['name']:
-#         user = User.query.filter_by(email=session['email']).first()
-#         return render_template('dashboard.html',user=user)
 
-#     return redirect('/login')
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
@@ -134,6 +133,8 @@ def profile():
 
 @app.route('/add_expenses', methods=['POST','GET'])
 def add_expenses():
+    if not session.get('name'):
+        return redirect('/login')
     if session['name']:
         if request.method == 'POST':
             name = request.form['name']
@@ -151,7 +152,6 @@ def add_expenses():
             return redirect('/add_expenses')
         user = User.query.filter_by(email=session['email']).first()
         return render_template('add_expenses.html',user=user)
-    return redirect('/login')
 
 @app.route('/expense_list', methods=['GET'])
 def expense_list():
@@ -318,10 +318,10 @@ def ai():
             return render_template('ai.html', user=user, analysis=rendered_output, last_refreshed=last_refreshed)
 
     cached_response = cache.get('response', "Generating new analysis...")
-    if "Would you like" in cached_response:
-        cached_response = cached_response.rsplit("Would you like", 1)[0].strip()
+    # if "Would you like" in cached_response:
+    #     cached_response = cached_response.rsplit("Would you like", 1)[0].strip()
 
-    # ✅ AI will generate in the background
+    #  AI will generate in the background
     def background_ai_processing():
         profile_summary = f"Income: ₹{details.annual_income}, Budget: ₹{details.monthly_budget}, Goal: {details.financial_goal or 'N/A'}"
         expense_summary = f"Recent Expenses Total: ₹{sum(e['amount'] for e in expense_data)}"
