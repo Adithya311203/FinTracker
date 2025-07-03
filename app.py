@@ -343,5 +343,5 @@ def ai():
     return render_template('ai.html', user=user, analysis=rendered_output, last_refreshed=last_refreshed)
 
 
-if __name__ == '__main__':  # pragma: no cover
-    app.run(host='0.0.0.0', port=5000, debug=True)  # pragma: no cover
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
