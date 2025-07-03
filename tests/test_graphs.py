@@ -62,4 +62,4 @@ def test_get_icon_status_data_structure(sample_expenses):
 def test_create_gauge_under_branch():
     from graphs import create_gauge
     out = create_gauge("Gauge", 10000, 50000, show_budget=True)
-    assert "📉" in out 
+    assert "under" in out 
