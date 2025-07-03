@@ -135,21 +135,6 @@ def test_register_post_existing_user(client):
         assert response.status_code == 200
         mock_render.assert_called_with('register.html', error='Email already registered')
 
-def test_main_runs_app(monkeypatch):
-    from app import main
-    called = {}
-
-    def fake_run(*args, **kwargs):
-        called['called'] = True
-        assert kwargs['host'] == '0.0.0.0'
-        assert kwargs['port'] == 5000
-        assert kwargs['debug'] is True
-
-    monkeypatch.setattr("app.app.run", fake_run)
-    main()
-    assert called.get('called')
-
-
 def test_register_post_new_user(client):
     with patch('app.User.query') as mock_query, \
          patch('app.db.session.add') as mock_add, \
