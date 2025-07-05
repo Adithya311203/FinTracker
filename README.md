@@ -103,6 +103,7 @@ FinTracker/
 ├── ai.py                  # AI generation logic
 ├── templates/             # HTML Templates
 ├── static/                # CSS/JS/Assets
+├── screenshots/           # Demo/Output of the app
 ├── database.db            # SQLite DB
 ├── requirements.txt       # Dependencies
 ├── .github/workflows/     # GitHub Actions CI/CD
