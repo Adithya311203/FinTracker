@@ -32,7 +32,7 @@ FinTracker is a full-stack **Flask** web application that helps users **track ex
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/FinTracker.git
+git clone https://github.com/Adithya311203/FinTracker.git
 cd FinTracker
 ```
 
