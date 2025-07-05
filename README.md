@@ -23,7 +23,7 @@ FinTracker is a full-stack **Flask** web application that helps users **track ex
 ## 🖼️ Screenshots
 
 
-![FinTracker Dashboard](./dashboard.png)
+![FinTracker Dashboard](./dashboard_.gif)
 
 ---
 
