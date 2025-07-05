@@ -2,13 +2,13 @@ from openai import OpenAI
 
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key="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",  # Replace with your actual key
+    api_key="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",  # Replace with your actual key
 )
 
 def analyze_txt_content(text):
     try:
         completion = client.chat.completions.create(
-    model="deepseek/deepseek-r1-0528:free",
+    model="mistralai/mistral-small-3.2-24b-instruct:free",
     messages=[
         {
             "role": "system",
