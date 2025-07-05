@@ -26,16 +26,20 @@ class User(db.Model):
 
 class Expenses(db.Model):
     id = db.Column(db.Integer,primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     name = db.Column(db.String(100),nullable=False)
     amount = db.Column(db.Integer,nullable=False)
     date = db.Column(db.Date, nullable=False)
     description = db.Column(db.String(100),nullable=False)
 
-    def __init__(self,name,amount,date,description):
+    user = db.relationship('User', backref=db.backref('expenses', lazy=True))
+
+    def __init__(self,name,amount,date,description,user_id):
         self.name = name
         self.amount = amount
         self.date = date
         self.description = description
+        self.user_id = user_id
 
 class UserDetails(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -135,6 +139,7 @@ def profile():
 def add_expenses():
     if not session.get('name'):
         return redirect('/login')
+    user = User.query.filter_by(email=session['email']).first()
     if session['name']:
         if request.method == 'POST':
             name = request.form['name']
@@ -144,13 +149,12 @@ def add_expenses():
             date_obj = datetime.strptime(date_string, "%Y-%m-%d").date()
 
             print("###",name,amount,date_string,desc)
-            newExpense = Expenses(name=name,amount=amount,date=date_obj,description=desc)
+            newExpense = Expenses(name=name, amount=amount, date=date_obj, description=desc, user_id=user.id)
             db.session.add(newExpense)
             db.session.commit()
             session['ai_dirty'] = True
             print('Expense has been added')
             return redirect('/add_expenses')
-        user = User.query.filter_by(email=session['email']).first()
         return render_template('add_expenses.html',user=user)
 
 @app.route('/expense_list', methods=['GET'])
@@ -171,11 +175,13 @@ def expense_list():
         # Build the query
         if sort_column is not None:
             if order == 'desc':
-                expenses = Expenses.query.order_by(sort_column.desc()).all()
+                expenses = Expenses.query.filter_by(user_id=user.id).order_by(sort_column.desc()).all()
             else:
-                expenses = Expenses.query.order_by(sort_column.asc()).all()
+                expenses = Expenses.query.filter_by(user_id=user.id).order_by(sort_column.asc()).all()
         else:
-            expenses = Expenses.query.all()
+            # expenses = Expenses.query.filter_by(user_id=user.id).all()
+            expenses = Expenses.query.filter_by(user_id=user.id).all()
+
                 
         total = sum(exp.amount for exp in expenses)
 
@@ -192,7 +198,7 @@ def dashboard():
 
     monthly_budget = details.monthly_budget if details and details.monthly_budget else 0
 
-    expenses = Expenses.query.all()
+    expenses = Expenses.query.filter_by(user_id=user.id).all()
 
     chart_div = generate_bar_chart(expenses)
     worm_chart_div = generate_worm_chart(expenses)
@@ -203,8 +209,7 @@ def dashboard():
     )
 
     status_tiles = get_icon_status_data(expenses, monthly_budget=monthly_budget)
-    latest_expenses = Expenses.query.order_by(Expenses.date.desc()).limit(4).all()
-
+    latest_expenses = Expenses.query.filter_by(user_id=user.id).order_by(Expenses.date.desc()).limit(4).all()
     return render_template(
         'dashboard.html',
         user=user,
@@ -219,14 +224,14 @@ def dashboard():
         monthly_budget=monthly_budget
     )
 
-@app.route('/download_txt', methods=['POST'])
+@app.route('/download_txt', methods=['POST','GET'])
 def download_txt():
     if 'email' not in session:
         return redirect('/login')
 
     user = User.query.filter_by(email=session['email']).first()
     details = UserDetails.query.filter_by(user_id=user.id).first()
-    expenses = Expenses.query.all()
+    expenses = Expenses.query.filter_by(user_id=user.id).all()
 
     total_spent = sum(e.amount for e in expenses)
     latest_expenses = sorted(expenses, key=lambda x: x.date, reverse=True)[:5]
@@ -282,9 +287,9 @@ from ai import analyze_txt_content, generate_data_hash
 
 
 import markdown
-from ai import analyze_txt_content, generate_data_hash
 
-CACHE_FILE = "ai_cache.json"
+
+# CACHE_FILE = "ai_cache.json"
 
 @app.route('/ai')
 def ai():
@@ -293,7 +298,8 @@ def ai():
 
     user = User.query.filter_by(email=session['email']).first()
     details = UserDetails.query.filter_by(user_id=user.id).first()
-    expenses = Expenses.query.all()
+    expenses = Expenses.query.filter_by(user_id=user.id).all()
+    CACHE_FILE = f"ai_cache_{user.id}.json"
 
     profile_data = {field: getattr(details, field) or "Not set" for field in
                     ['annual_income', 'monthly_budget', 'occupation', 'age', 'location', 'financial_goal']}
@@ -307,7 +313,7 @@ def ai():
         with open(CACHE_FILE, 'r') as f:
             cache = json.load(f)
 
-        # ✅ Get file modification time for "Last Refreshed"
+        # Get file modification time for "Last Refreshed"
         last_refreshed = datetime.fromtimestamp(os.path.getmtime(CACHE_FILE)).strftime("%Y-%m-%d %H:%M:%S")
 
         if cache.get('hash') == current_hash:

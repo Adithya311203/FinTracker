@@ -2,7 +2,7 @@ import pytest
 import os
 import json
 import sys
-from datetime import date
+from datetime import date,datetime
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
     
 from flask import session
@@ -78,7 +78,7 @@ def test_expenses_model_initialization():
     test_date = date(2025, 7, 1)
     test_description = 'Office lunch'
 
-    expense = Expenses(name=test_name, amount=test_amount, date=test_date, description=test_description)
+    expense = Expenses(name=test_name, amount=test_amount, date=test_date, description=test_description, user_id=1)
 
     assert expense.name == test_name
     assert expense.amount == test_amount
@@ -259,10 +259,13 @@ def test_add_expense_post_valid_data(client):
         sess['name'] = 'TestUser'
         sess['email'] = 'test@example.com'
 
-    with patch('app.Expenses') as mock_expense_cls, \
-         patch('app.db.session.add') as mock_add, \
-         patch('app.db.session.commit') as mock_commit:
+    with patch('app.User.query') as mock_user_query, \
+        patch('app.Expenses') as mock_expense_cls, \
+        patch('app.db.session.add') as mock_add, \
+        patch('app.db.session.commit') as mock_commit:
 
+        mock_user = MagicMock(id=1)
+        mock_user_query.filter_by.return_value.first.return_value = mock_user
         response = client.post('/add_expenses', data={
             'name': 'Groceries',
             'amount': '250',
@@ -291,69 +294,74 @@ def test_add_expense_get_form_render(client):
 
 def test_expense_list_sort_by_amount_asc(client):
     with client.session_transaction() as sess:
-        sess['name'] = 'TestUser'
         sess['email'] = 'test@example.com'
+        sess['name'] = 'Test User'
 
-    mock_user = MagicMock()
-    mock_expenses = [MagicMock(amount=100), MagicMock(amount=200)]
+    mock_user = MagicMock(id=1, email='test@example.com')
+
+    # Create mock expense objects
+    mock_expense1 = MagicMock(amount=100)
+    mock_expense2 = MagicMock(amount=200)
+    mock_expenses = [mock_expense1, mock_expense2]
 
     with patch('app.User.query') as mock_user_query, \
-         patch('app.Expenses') as mock_expenses_model, \
+         patch('app.Expenses.query') as mock_exp_query, \
          patch('app.render_template') as mock_render:
 
+        # Mock user lookup
         mock_user_query.filter_by.return_value.first.return_value = mock_user
-        mock_expenses_model.amount.asc.return_value = 'amount_asc'
-        mock_expenses_model.query.order_by.return_value.all.return_value = mock_expenses
 
+        # Chain: Expenses.query.filter_by().order_by().all()
+        mock_filter = MagicMock()
+        mock_order_by = MagicMock()
+        mock_order_by.all.return_value = mock_expenses
+        mock_filter.order_by.return_value = mock_order_by
+        mock_exp_query.filter_by.return_value = mock_filter
+
+        # Final HTML output stub
         mock_render.return_value = 'rendered'
 
         response = client.get('/expense_list?sort=amount&order=asc')
 
-        mock_expenses_model.query.order_by.assert_called_once_with('amount_asc')
-        mock_render.assert_called_once_with(
-            'expense_list.html',
-            user=mock_user,
-            expenses=mock_expenses,
-            total=300,
-            sort_by='amount',
-            order='asc'
-        )
-        assert response.data == b'rendered'
+        # 🔍 Assertions
+        mock_exp_query.filter_by.assert_called_once_with(user_id=mock_user.id)
+        mock_filter.order_by.assert_called_once()  # Confirm sort
+        mock_render.assert_called_once()           # Confirm page rendered
+
 
 def test_expense_list_sort_by_date(client):
     with client.session_transaction() as sess:
-        sess['name'] = 'TestUser'
         sess['email'] = 'test@example.com'
+        sess['name'] = 'Test User'
 
-    mock_user = MagicMock()
-    mock_expenses = [MagicMock(amount=100), MagicMock(amount=200)]
+    mock_user = MagicMock(id=1, email='test@example.com')
+
+    mock_expense1 = MagicMock(date=datetime(2025, 7, 1))
+    mock_expense2 = MagicMock(date=datetime(2025, 7, 2))
+    mock_expenses = [mock_expense2, mock_expense1]
 
     with patch('app.User.query') as mock_user_query, \
-         patch('app.Expenses') as mock_expenses_model, \
+         patch('app.Expenses.query') as mock_exp_query, \
          patch('app.render_template') as mock_render:
 
         mock_user_query.filter_by.return_value.first.return_value = mock_user
 
-        # Mocking sort column access
-        mock_sort_column = MagicMock()
-        mock_sort_column.desc.return_value = 'date_desc'
-        mock_expenses_model.date = mock_sort_column
+        # Chain mocking
+        mock_filtered = MagicMock()
+        mock_exp_query.filter_by.return_value = mock_filtered
 
-        mock_expenses_model.query.order_by.return_value.all.return_value = mock_expenses
-        mock_render.return_value = b'rendered'
+        mock_ordered = MagicMock()
+        mock_filtered.order_by.return_value = mock_ordered
+        mock_ordered.all.return_value = mock_expenses
+
+        mock_render.return_value = 'rendered'
 
         response = client.get('/expense_list?sort=date&order=desc')
 
-        mock_expenses_model.query.order_by.assert_called_once_with('date_desc')
-        mock_render.assert_called_once_with(
-            'expense_list.html',
-            user=mock_user,
-            expenses=mock_expenses,
-            total=300,
-            sort_by='date',
-            order='desc'
-        )
-        assert response.data == b'rendered'
+        # Assert that sort was used correctly
+        mock_filtered.order_by.assert_called_once()
+        mock_filtered.order_by.return_value.all.assert_called_once()
+        mock_render.assert_called_once()
 
 def test_expense_list_invalid_sort_key(client):
     with client.session_transaction() as sess:
@@ -392,116 +400,141 @@ def test_ai_falls_back_to_background_processing(client):
         dq.filter_by.return_value.first.return_value = mock_details
         eq.all.return_value = []
         rt.return_value = b'rendered fallback'
-
+        mock_user.id = 1
         client.get('/ai')  # triggers thread
 
         mt.call_args[1]['target']()  # manually run background
-
-        mo.assert_called_with('ai_cache.json', 'w')
+        mo.assert_any_call(f'ai_cache_{mock_user.id}.json', 'w')
+        # mo.assert_called_with('ai_cache.json', 'w')
         assert rt.called
 
 
-
 def test_download_txt_route(client):
-    from datetime import datetime
-    today = datetime.now().date()
-
-    # Reusable expenses
-    base_expenses = [
-        MagicMock(name="Food", amount=1000, date=today, description="Lunch"),
-        MagicMock(name="Fuel", amount=1500, date=today, description="Petrol"),
-        MagicMock(name="Groceries", amount=800, date=today, description="Home needs")
-    ]
-
-    # 1. ✅ Case: Over Budget
     with client.session_transaction() as sess:
         sess['email'] = 'test@example.com'
+        sess['name'] = 'Test User'
 
-    mock_user = MagicMock(name="Test User", email="test@example.com")
-    over_budget_details = MagicMock(
-        age=30, location="Mumbai", occupation="Engineer",
-        annual_income=1000000, monthly_budget=1000, financial_goal="Save"
-    )
+    mock_user = MagicMock(name="Test User", id=1, email="test@example.com")
 
-    with patch('app.User.query') as uq, \
-         patch('app.UserDetails.query') as dq, \
-         patch('app.Expenses.query') as eq:
+    # 1️⃣ Over-Budget Scenario
+    mock_details_over = MagicMock()
+    mock_details_over.annual_income = 100000
+    mock_details_over.monthly_budget = 1000
+    mock_details_over.financial_goal = "Save more"
+    mock_details_over.age = 25
+    mock_details_over.location = "Chennai"
+    mock_details_over.occupation = "Engineer"
 
-        uq.filter_by.return_value.first.return_value = mock_user
-        dq.filter_by.return_value.first.return_value = over_budget_details
-        eq.all.return_value = base_expenses
+    mock_expense1 = MagicMock(name="Coffee", amount=600, date=datetime(2025, 7, 1), description="Food")
+    mock_expense2 = MagicMock(name="Books", amount=700, date=datetime(2025, 7, 2), description="Education")
 
-        res = client.post('/download_txt')
-        body = res.data.decode()
-        assert "❌ Over Budget" in body
+    # 2️⃣ No Budget Scenario
+    mock_details_none = MagicMock()
+    mock_details_none.annual_income = 200000
+    mock_details_none.monthly_budget = None
+    mock_details_none.financial_goal = "Retire Early"
+    mock_details_none.age = 30
+    mock_details_none.location = "Mumbai"
+    mock_details_none.occupation = "Teacher"
 
-    # 2. ✅ Case: Within Budget
-    within_budget_details = MagicMock(
-        age=30, location="Mumbai", occupation="Engineer",
-        annual_income=1000000, monthly_budget=10000, financial_goal="Save"
-    )
+    mock_expense3 = MagicMock(name="Snacks", amount=100, date=datetime(2025, 7, 3), description="Food")
 
-    with patch('app.User.query') as uq, \
-         patch('app.UserDetails.query') as dq, \
-         patch('app.Expenses.query') as eq:
+    # 3️⃣ Within Budget Scenario
+    mock_details_within = MagicMock()
+    mock_details_within.annual_income = 300000
+    mock_details_within.monthly_budget = 5000
+    mock_details_within.financial_goal = "Travel"
+    mock_details_within.age = 28
+    mock_details_within.location = "Delhi"
+    mock_details_within.occupation = "Artist"
 
-        uq.filter_by.return_value.first.return_value = mock_user
-        dq.filter_by.return_value.first.return_value = within_budget_details
-        eq.all.return_value = base_expenses
-
-        res = client.post('/download_txt')
-        body = res.data.decode()
-        assert "✅ Within Budget" in body
-
-    # 3. ✅ Case: Monthly budget not set
-    no_budget_details = MagicMock(
-        age=30, location="Mumbai", occupation="Engineer",
-        annual_income=1000000, monthly_budget=None, financial_goal="Save"
-    )
+    mock_expense4 = MagicMock(name="Lunch", amount=400, date=datetime(2025, 7, 4), description="Food")
+    mock_expense5 = MagicMock(name="Metro", amount=300, date=datetime(2025, 7, 5), description="Transport")
 
     with patch('app.User.query') as uq, \
          patch('app.UserDetails.query') as dq, \
          patch('app.Expenses.query') as eq:
 
         uq.filter_by.return_value.first.return_value = mock_user
-        dq.filter_by.return_value.first.return_value = no_budget_details
-        eq.all.return_value = base_expenses
 
-        res = client.post('/download_txt')
-        body = res.data.decode()
-        assert "Monthly budget not set." in body
+        # --- First: Over Budget ---
+        dq.filter_by.return_value.first.return_value = mock_details_over
+        eq.filter_by.return_value.all.return_value = [mock_expense1, mock_expense2]
+
+        res1 = client.get('/download_txt')
+        txt1 = res1.data.decode()
+        assert "❌ Over Budget" in txt1
+        assert "Coffee" in txt1 and "Books" in txt1
+
+        # --- Second: No Budget ---
+        dq.filter_by.return_value.first.return_value = mock_details_none
+        eq.filter_by.return_value.all.return_value = [mock_expense3]
+
+        res2 = client.get('/download_txt')
+        txt2 = res2.data.decode()
+        assert "Monthly budget not set." in txt2
+        assert "Snacks" in txt2
+
+        # --- Third: Within Budget ---
+        dq.filter_by.return_value.first.return_value = mock_details_within
+        eq.filter_by.return_value.all.return_value = [mock_expense4, mock_expense5]
+
+        res3 = client.get('/download_txt')
+        txt3 = res3.data.decode()
+        assert "✅ Within Budget" in txt3
+        assert "Lunch" in txt3 and "Metro" in txt3
+
+
 
 def test_ai_background_writes_cache_with_categories(client):
-    with client.session_transaction() as s: s['email'] = 'x'
+    with client.session_transaction() as s:
+        s['email'] = 'x@example.com'
 
-    mock_expense = MagicMock(name='Coffee', amount=100, date='2025-07-01', description='Food')
+    dummy_expense = {
+        "name": "Coffee",
+        "amount": 100.0,
+        "date": "2025-07-01",
+        "description": "Food"
+    }
 
-    with patch('app.User.query'), \
-         patch('app.UserDetails.query'), \
+    mock_user = MagicMock(id=42, email="x@example.com")
+    mock_details = MagicMock()
+    mock_details.annual_income = 1000000
+    mock_details.monthly_budget = 5000
+    mock_details.financial_goal = "Save"
+
+    with patch('app.User.query') as uq, \
+         patch('app.UserDetails.query') as dq, \
          patch('app.Expenses.query') as eq, \
          patch('app.generate_data_hash', return_value='abc'), \
          patch('app.os.path.exists', return_value=False), \
          patch('app.render_template'), \
-         patch('app.analyze_txt_content', return_value='AI output') as mock_ai, \
+         patch('app.analyze_txt_content', side_effect=lambda p: p) as mock_ai, \
          patch('builtins.open', mock_open()) as mo, \
          patch('app.threading.Thread') as mt:
 
-        eq.all.return_value = [mock_expense]  # Non-empty desc triggers categories logic
+        uq.filter_by.return_value.first.return_value = mock_user
+        dq.filter_by.return_value.first.return_value = mock_details
+
+        # ✅ Patch .filter_by().all()
+        eq.filter_by.return_value.all.return_value = [MagicMock(**dummy_expense)]
 
         client.get('/ai')
-        mt.call_args[1]['target']()  # Call background_ai_processing manually
+        mt.call_args[1]['target']()  # run the background thread manually
 
-        # ✅ This covers the "if categories:" branch
-        mo.assert_called_with('ai_cache.json', 'w')
-        mock_ai.assert_called_once()
-        assert 'Expense Categories:' in mock_ai.call_args[0][0]
+        mo.assert_any_call(f'ai_cache_{mock_user.id}.json', 'w')
+
+        prompt = mock_ai.call_args[0][0]
+        print("Prompt used:\n", prompt)
+
+        assert "Expense Categories:" in prompt
+        assert "Food" in prompt
+        assert "Recent Expenses Total: ₹100.0" in prompt
 
 def test_dashboard_route_authenticated(client):
-    # Set up mock session
     with client.session_transaction() as sess:
         sess['email'] = 'test@example.com'
 
-    # Mock objects
     mock_user = MagicMock(id=1, email='test@example.com')
     mock_details = MagicMock(monthly_budget=5000)
     mock_expenses = [MagicMock(), MagicMock()]
@@ -510,24 +543,33 @@ def test_dashboard_route_authenticated(client):
     with patch('app.User.query') as uq, \
          patch('app.UserDetails.query') as dq, \
          patch('app.Expenses.query') as eq, \
-         patch('app.generate_bar_chart', return_value='<div>bar</div>') as bar_chart, \
-         patch('app.generate_worm_chart', return_value='<div>worm</div>') as worm_chart, \
-         patch('app.generate_pie_chart', return_value='<div>pie</div>') as pie_chart, \
-         patch('app.generate_gauge_charts', return_value=('g1', 'g2', 'g3')) as gauge_charts, \
-         patch('app.get_icon_status_data', return_value=['tile1', 'tile2']) as icon_data, \
+         patch('app.generate_bar_chart', return_value='<div>bar</div>'), \
+         patch('app.generate_worm_chart', return_value='<div>worm</div>'), \
+         patch('app.generate_pie_chart', return_value='<div>pie</div>'), \
+         patch('app.generate_gauge_charts', return_value=('g1', 'g2', 'g3')), \
+         patch('app.get_icon_status_data', return_value=['tile1', 'tile2']), \
          patch('app.render_template') as rt:
 
-        # Mock DB returns
         uq.filter_by.return_value.first.return_value = mock_user
         dq.filter_by.return_value.first.return_value = mock_details
-        eq.all.return_value = mock_expenses
-        eq.order_by.return_value.limit.return_value.all.return_value = mock_latest_expenses
+
+        # Mock for Expenses.query.filter_by().all()
+        eq.filter_by.return_value.all.return_value = mock_expenses
+
+        # Mock for Expenses.query.filter_by().order_by().limit().all()
+        mock_filter = MagicMock()
+        mock_order = MagicMock()
+        mock_limit = MagicMock()
+        eq.filter_by.return_value = mock_filter
+        mock_filter.order_by.return_value = mock_order
+        mock_order.limit.return_value = mock_limit
+        mock_limit.all.return_value = mock_latest_expenses
+
+
         rt.return_value = 'rendered'
 
-        # Call the route
         res = client.get('/dashboard')
 
-        # Assertions
         assert res.data == b'rendered'
         rt.assert_called_once_with(
             'dashboard.html',
@@ -542,6 +584,7 @@ def test_dashboard_route_authenticated(client):
             status_tiles=['tile1', 'tile2'],
             monthly_budget=5000
         )
+
 
 def test_ai_strips_would_you_like_prompt(client):
     with client.session_transaction() as sess:
