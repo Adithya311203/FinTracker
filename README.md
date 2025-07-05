@@ -23,7 +23,7 @@ FinTracker is a full-stack **Flask** web application that helps users **track ex
 ## 🖼️ Screenshots
 
 
-![alt text](image.png)
+![FinTracker Dashboard](./dashboard.png)
 
 ---
 
@@ -49,15 +49,7 @@ source .venv/bin/activate      # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 4. Set Up the Database
-
-```bash
-python
->>> from app import db, app
->>> with app.app_context():
->>>     db.create_all()
->>> exit()
-```
+### 4. All set! Now Run app.py
 
 ---
 
@@ -92,7 +84,7 @@ client = OpenAI(
 To run all unit tests and see code coverage:
 
 ```bash
-pytest --cov=.
+pytest --cov=. --cov-report=term-missing
 ```
 
 > Or let **GitHub Actions** handle that for you on every push. The pipeline includes:
@@ -118,19 +110,3 @@ FinTracker/
 ```
 
 ---
-
-## 🙌 Contributions
-
-Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
-
----
-
-## 📄 License
-
-MIT License. See [LICENSE](LICENSE) for more info.
-
----
-
-## 📬 Contact
-
-Made with ❤️ by [Your Name](https://github.com/yourusername)
