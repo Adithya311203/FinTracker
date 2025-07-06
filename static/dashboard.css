@@ -129,7 +129,7 @@ h3{
     border-radius: 10px;
     box-sizing: border-box;
     padding: 10px 10px;
-    background-image: linear-gradient(90deg, yellowgreen, #0494fc);
+    background-image: linear-gradient(90deg, magenta, #0494fc);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -208,7 +208,7 @@ h3{
   gap: 0;                                 /* No space between tiles */
   width: 315px;                            /* or set specific width */
   height: 202px;
-  background-image: linear-gradient(90deg,yellowgreen,rgb(0, 115, 255));
+  background-image: linear-gradient(90deg,magenta,rgb(0, 115, 255));
   position:absolute;
   align-items: center;
 }

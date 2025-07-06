@@ -10,6 +10,7 @@ body {
 .form-logo{
     padding-top: 25px;
     text-align: center;
+    margin-top: 40px ;
 }
  .form-logo-part1 {
     font-size: 85px;
@@ -31,24 +32,26 @@ body {
     flex: 1;
     display: flex;
     justify-content: center;
-    align-items: center;
+    /* align-items: center;  */
+    padding-top: 60px;
   }
   
   .register-form {
     width: 450px;
     height: max-content;
-    background-image: radial-gradient(circle at bottom left, yellow,yellowgreen,lime,green);
+    /* background-image: radial-gradient(circle at bottom left, yellow,yellowgreen,lime,green); */
+    background-image: linear-gradient(90deg,magenta,cyan);
     text-align: center;
     border-radius: 10%;
     display: flex;
     flex-direction: column;
     /* justify-content: center; */
     align-items: center;
-    box-shadow: 0 0 10px lime;
+    box-shadow: 0 0 12px blue;
     padding: 20px 0px;
   }
 
-  .input-box {
+  .input-box ,.register-input-box{
     width: 300px;
     height: 50px;
     margin: 5px;
@@ -68,6 +71,12 @@ body {
     color: red;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     
+}
+  
+.register-input-box::placeholder{
+    color: darkblue;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-style: italic;
 }
 
 
@@ -97,3 +106,31 @@ body {
     transition:ease 0.7s;
     text-shadow: 0 0 1px #a4b5c4;
   }
+
+  .register-button {
+  background-image: linear-gradient(90deg, rgb(200, 0, 255), blue);
+  border-color: white;
+  color: white;
+  text-shadow: none;
+  transition: 
+    background-image 1.7s ease,
+    background-color 1.7s ease,
+    color 1.7s ease,
+    border-color 1.7s ease,
+    box-shadow 1.7s ease,
+    text-shadow 1.7s ease;
+}
+
+.register-button:hover {
+  box-shadow: inset 0 0 5px magenta;
+  color: white;
+  border-color: white;
+  background-image: linear-gradient(270deg, magenta, violet, cyan);
+  background-color: black;
+  text-shadow: inset 0 0 1px;
+}
+
+.register-input-box{
+  background-image: linear-gradient(90deg,white,skyblue);
+  color: darkblue;
+}

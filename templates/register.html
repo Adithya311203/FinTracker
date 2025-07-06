@@ -16,11 +16,11 @@
         <div class="register-form">
             <h1>REGISTER</h1>
             <form action="/register" method="POST">
-                <input type="text" name="name" placeholder="Name" required class="input-box"><br>
-                <input type="email" name="email" placeholder="Email" required class="input-box"><br>
-                <input type="password" name="password" placeholder="Password" required class="input-box"><br>
-                <input type="password" name="confirm_password" placeholder="Confirm Password" required class="input-box"><br>
-                <button type="submit">Confirm</button><br>
+                <input type="text" name="name" placeholder="Name" required class="register-input-box"><br>
+                <input type="email" name="email" placeholder="Email" required class="register-input-box"><br>
+                <input type="password" name="password" placeholder="Password" required class="register-input-box"><br>
+                <input type="password" name="confirm_password" placeholder="Confirm Password" required class="register-input-box"><br>
+                <button type="submit" class ="register-button">Confirm</button><br>
                 <a href="{{ url_for('login') }}" style="text-decoration: none;">Already have an account? Login Here</a>
             </form>
         </div>
