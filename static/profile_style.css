@@ -1,18 +1,19 @@
 .profile-container {
-    background-color: #1c1c1c;
+    background-image: linear-gradient(90deg,#1a3d63,#f6fafd);
     max-width: 700px;
     margin: 50px auto;
     padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 0 20px #0ff;
+    border-radius: 20px 0px 20px 0px;
+    height: 500px;
+    box-shadow: 0 0 15px #1a3d63;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 .profile-container h2 {
     text-align: center;
-    color: #0ff;
+    color: white;
     margin-bottom: 20px;
-    text-shadow: 0 0 10px #0ff;
-    
+    text-shadow: 0 0 12px grey ;
 }
 
 .profile-field {
@@ -36,28 +37,37 @@
     background-color: #2a2a2a;
     border-radius: 6px;
     box-shadow: inset 0 0 5px #000;
-    color: #eee;
+    color: black;
     font-size: 18px;
     height: 33px;
     /* text-align: center; */
     align-content: center;
+    background-color: #e3c39d;
+    border-radius: 20px 0px 20px 0px;
 }
 
 .edit-input {
     display: none;
     flex: 1;
-    padding: 8px 12px;
-    background-color: #222;
-    color: #0ff;
-    border: 1px solid #0ff;
+    /* padding: 8px 12px; */
+    background-color: #e3c39d;
+    color: red;
+    border: 0px solid red;
     border-radius: 6px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     font-size: 18px;
     outline: none;
+    height: 33px;
+    padding: 6px 12px 6px 25px;
+    box-shadow: inset 0 0 5px #000;
+    border-radius: 20px 0px 20px 0px;
 }
 
 textarea.edit-input {
-    height: 80px;
+    height: 50px;
+    background-color: #e3c39d;
     resize: none;
+    
 }
 
 .edit-buttons {
@@ -69,18 +79,22 @@ textarea.edit-input {
 .edit-buttons button {
     padding: 6px 12px;
     font-size: 18px;
-    color: #0ff;
+    color: red;
     background-color: transparent;
-    border: 1px solid #0ff;
+    border: 1px solid red;
     border-radius: 6px;
     cursor: pointer;
     transition: 0.3s;
+    height: 45px;
+    box-shadow: none;
+    
+    border-radius: 20px 0px 20px 0px;
 }
 
 .edit-buttons button:hover {
-    background-color: #0ff;
+    background-color: red;
     color: #121212;
-    box-shadow: 0 0 10px #0ff;
+    box-shadow: 0 0 10px red;
 }
 
 .flash-messages {
@@ -88,6 +102,7 @@ textarea.edit-input {
     padding: 0;
     margin-bottom: 20px;
     text-align: center;
+    font-weight: bold;
 }
 
 .flash-success {
@@ -100,20 +115,51 @@ textarea.edit-input {
     text-shadow: 0 0 5px #ff4f4f;
 }
 
-.download-btn {
+/* .download-btn {
     padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
+    background-image: linear-gradient(270deg,cyan,lime);
+    color: black;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
     margin-left: auto; 
     margin-right: auto; 
-    display: block;  
+    display: block;
+    font-size: 15px;
     
+} */
+.download-btn {
+  padding: 10px 15px;
+  background: linear-gradient(270deg, cyan, lime);  /* Default gradient background */
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  margin: 0 auto;
+  display: block;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  color: black; /* fallback */
+  overflow: hidden;
+  border-radius: 20px 0px 20px 0px;
 }
 
 .download-btn:hover {
-    background-color: #0056b3;
+  background: black; /* Solid black background on hover */
+  border: 1px solid lime;
+  box-shadow: inset 0 0 10px lime;
+}
+
+.download-btn .btn-text {
+  color: black;
+  transition: all 0.3s ease;
+}
+
+.download-btn:hover .btn-text {
+  background: linear-gradient(90deg, cyan, lime);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  
 }

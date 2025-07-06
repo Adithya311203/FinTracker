@@ -18,7 +18,7 @@ table {
         /* background-image: linear-gradient(270deg,grey,silver,white,ivory); */
         /* background-image: linear-gradient(315deg,rgb(81, 80, 80),#353232,black); */
         /* background-image: linear-gradient(315deg,violet,indigo,blue,skyblue,cyan); */
-        background-image: linear-gradient(120deg,#738FBD,#A8C3D4,#DBD6DF,#EEC6C7,#CC8EB1);
+        background-image: linear-gradient(120deg,skyblue,#A8C3D4,#DBD6DF,#EEC6C7,#CC8EB1);
         color: black;
         /* text-shadow: 0 0 5px; */
         font-size: large;
@@ -53,6 +53,13 @@ tr:hover{
 }
 
 .header{
-    /* background-image: linear-gradient(315deg,lime,cyan); */
-    color: black;
+    background-image: linear-gradient(90deg,cyan,magenta);
+    color: ivory;
+    
+}
+
+b{
+    color: white;
+    font-size: larger;
+    text-shadow: 0 0 5px;
 }

@@ -1,8 +1,9 @@
 html, body {
     margin: 0;
     padding: 0;
-    background-color: #0a1931;
-    /* background-image: linear-gradient(#eceff1, #cfd8dc, #b0bec5, #90a4ae, #78909c, #607d8b, #546e7a, #455a64, #37474f, #263238); */
+    /* background-color: #0a1931; */
+    background-image: url('temp.jpg');
+    background-size:cover;
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
   }
   
