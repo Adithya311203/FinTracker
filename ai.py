@@ -2,7 +2,7 @@ from openai import OpenAI
 
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key="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",  # Replace with your actual key
+    api_key="sk-or-v1-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",  # Replace with your actual key
 )
 
 def analyze_txt_content(text):
