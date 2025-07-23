@@ -1,4 +1,5 @@
 # Makefile
+.PHONY: print-dir
 
 FULL_DIR := $(CURDIR)/Testing_Folder
 
