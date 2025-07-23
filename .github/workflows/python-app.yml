@@ -29,3 +29,6 @@ jobs:
         run: |
           echo "from app import app" > test_import.py
           python test_import.py
+      - name: run make file 
+        run: |
+          make print-dir
