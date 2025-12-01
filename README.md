@@ -50,7 +50,9 @@ pip install -r requirements.txt
 ```
 
 ### 4. All set! Now Run app.py
-
+```bash
+python app.py
+```
 ---
 
 ## 🔑 Setting Up OpenRouter API Key for AI Insights
